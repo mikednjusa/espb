@@ -6,8 +6,8 @@
 
 # ES Rally -converted from install.sh
 FROM docker.elastic.co/elasticsearch/elasticsearch:5.4.0
-ENV USERNAME pikeabot
-ENV PASSWORD K1llallhumans
+ENV USERNAME username
+ENV PASSWORD password
 
 USER root
 RUN yum -y update

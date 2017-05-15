@@ -8,8 +8,8 @@
 #######################################################################################################
 # Controller
 FROM centos
-ENV USERNAME pikeabot
-ENV PASSWORD K1llallhumans
+ENV USERNAME username
+ENV PASSWORD password
 RUN yum -y update
 RUN yum -y install yum-utils
 RUN yum -y groupinstall development
