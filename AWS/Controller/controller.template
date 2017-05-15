@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+    ControllerInstance:
+    Type: "AWS::EC2::Instance"
+    Metadata:
+    	AWS::CloudFormation::Authentication:
+    		S3AccessCreds:
+    			type: S3
+    			roleName:
+    				Ref: InstanceRole
+    	AWS::CloudFormation::Init: 
+        config: 
+          files:
+          	/home/ec2-user/Dockerfile
+          		source: http:your-bucket.s3.amazonaws.com/Controller-Dockerfile/Dockerfile
+          		mode: "755"
+          		owner: "ec2-user"
+          		group: "ec2-user"
+          		authenticaton: S3AccessCreds
+    Properties: 
+      ImageId: "ami-2f726546" #Another comment -- This is a Linux AMI
+      InstanceType: t1.micro
+      KeyName: testkey
+      UserData:
+        Fn::Base64: !Sub |
+          yum update-y
+          yum install -y docker-ce
+          systemctl start docker
+          usermod -aG docker ec2-user
+          docker -t esrally_controller_image build .
+          

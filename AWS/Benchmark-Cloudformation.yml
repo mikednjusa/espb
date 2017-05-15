@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Ec2 instances for Benchmark Testing
+Parameters:
+  ImageId:
+    Type: string
+    Default: "ami-2f726546"
+Resources:
+  BenchmarkTestCluster:
+    Type: "AWS::ECS::Cluster"
+    Properties:
+      ClusterName: "benchmark-test-cluster"
+  ControllerStack:  #Using nested stacks
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/cloudformation-templates-us-east-1/controller.template
+      TimeoutInMinutes: '60'
+  ESBenchmarkStack:  
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/cloudformation-templates-us-east-1/esbenchmark.template
+      TimeoutInMinutes: '60'
+  ESBenchmarkResultsS3Bucket:
+    Type: "AWS::S3::Bucket"
+      Properties: 
+        AccessControl: BucketOwnerFullControl
+        BucketName: Elasticsearch-Benchmark-Results
+        Tags:
+          - Resource Tag
+Outputs:  
+  ControllerStackRef:
+    Value: !Ref ControllerStack
+  OutputFromControllerStack:
+    Value: !GetAtt ControllerStack.Outputs.BucketName
+  ESBenchmarkStackRef:
+    Value: !Ref ESBenchmarkStack
+  OutputFromEsBenchmarkStack:
+    Value: !GetAtt EsBenchmarkStack.Outputs.BucketName

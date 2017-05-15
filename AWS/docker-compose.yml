@@ -1,0 +1,18 @@
+version: '3'
+services:
+  controller:
+    image: controller
+  benchmark:
+    image: monitoring
+    ports:
+    - "9200:9200"
+  esrally:
+    image: esrally
+    ports:
+    - "9201:9200"
+  monitoring:
+    image: monitoring
+    ports:
+    - "9202:9200"
+
+
