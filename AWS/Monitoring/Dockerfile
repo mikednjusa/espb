@@ -24,4 +24,8 @@ RUN yum -y install wget gcc git python34-devel
 # Modifying /etc/sysctl.conf
 COPY sysctl.conf /etc
 
+# Install discovery-ec2 plugin
+RUN bin/elasticsearch-plugin install -b discovery-ec2
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+
 USER elasticsearch

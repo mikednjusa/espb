@@ -18,6 +18,11 @@ RUN python get-pip.py
 RUN pip install --upgrade --user awscli
 # Install git
 RUN yum -y install git git-2.7.4
+
+# Install discovery-ec2 plugin
+RUN bin/elasticsearch-plugin install -b discovery-ec2
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+
 RUN git clone https://$USERNAME:$PASSWORD@github.com/mikednjusa/espb.git
 RUN yum -y install unzip
 RUN unzip /espb/test_es12.zip 

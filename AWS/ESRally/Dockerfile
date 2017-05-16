@@ -56,6 +56,10 @@ RUN chmod 0440 /etc/sudoers
 # Install AWS CLI
 RUN pip install --upgrade --user awscli
 
+# Install discovery-ec2 plugin
+RUN bin/elasticsearch-plugin install -b discovery-ec2
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+
 # Installing python3
 RUN yum -y install epel-release
 RUN yum -y install python34
