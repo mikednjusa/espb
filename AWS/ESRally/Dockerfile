@@ -19,7 +19,8 @@ RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
 RUN python get-pip.py
 
 # Modifying /etc/sysctl.conf
-COPY sysctl.conf /etc
+# may need to only do this on the instance and not in docker
+#COPY sysctl.conf /etc
 
 # Install gcc, openssl, java
 RUN yum -y install gcc 
@@ -41,7 +42,7 @@ RUN tar xzf git-2.7.4.tar.gz
 RUN cd git-2.7.4
 RUN make prefix=/usr/local/git all
 RUN make prefix=/usr/local/git install
-RUN export PATH=$PATH:/usr/local/git/bin:/usr/local/git
+RUN export PATH=/usr/local/git/bin:/usr/local/git:$PATH
 RUN source /etc/bashrc
 
 # pull test info
