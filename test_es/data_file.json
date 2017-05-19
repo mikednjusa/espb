@@ -1,0 +1,41 @@
+{
+  "test_suites": {
+    "testsuite_001": [
+      {
+        "name": "large_track_tiny1",
+        "instance_type": "m3.medium",
+        "security_group_ids": "",
+        "region": "us-west-2",
+        "test": "esrally --pipeline=from-distribution --distribution-version=5.0.0 --track=geonames --test-mode",
+        "rally_config": "conditional_install_items/rally_csv.ini",
+        "root_size_gb": 16,
+        "do_run": false,
+        "save_on_failure": false
+      },
+      {
+        "name": "large_track_tiny2",
+        "instance_type": "m3.large",
+        "security_group_ids": "",
+        "region": "us-west-2",
+        "test": "esrally --pipeline=from-distribution --distribution-version=5.0.0 --track=geonames --test-mode",
+        "rally_config": "conditional_install_items/rally_es.ini",
+        "root_size_gb": 16,
+        "do_run": false,
+        "save_on_failure": false
+      }
+    ],
+    "testsuite_002": [
+      {
+        "name": "large_track_tiny1",
+        "instance_type": "m3.medium",
+        "security_group_ids": "",
+        "region": "us-west-2",
+        "test": "esrally --pipeline=from-distribution --distribution-version=5.0.0 --track=geonames --test-mode",
+        "rally_config": "conditional_install_items/rally_csv.ini",
+        "root_size_gb": 16,
+        "do_run": false,
+        "save_on_failure": false
+      }
+    ]
+  }
+}

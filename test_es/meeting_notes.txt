@@ -1,0 +1,78 @@
+ElasticSearch Meeting
+* get top output for cpu usage
+* get df output from centos better
+* add option to delete instance in data_file.json
+* 
+
+Issues so far:
+
+
+* Find and collect esrally generated log files.
+* Ctrl+C should terminate instances.
+* Output last X lines of esrally via a verbosity flag.
+  * Verbosity flag should specify amount of output from script to help debug issues.
+* On using ES ini, warn the user that the ES endpoint specified must be accessible via test machine.
+
+* DONE: Print out cpu load stats per run.
+* DONE: Add user-friendly banners to output (for instance creation, install, and for running test)
+* DONE: Collect any logs/zips on failure.
+
+
+Jan 25th:
+* DONE: Handle invalid json more gracefully
+* Collect the following file:
+Please check the log file [/home/ec2-user/.rally/benchmarks/races/2017-01-25-13-54-28/local/logs/rally_out.log] for further details first.
+
+
+Jan 24th:
+* DONE: Fixed bug where instance was being destroyed on failure despite --save_instance_on_failure
+* DONE: data_file.json no longer will run by default. it is meant to be an example.
+* DONE: removed files not needed (test_es_endpoint.py and endpoints.txt)
+
+
+Jan 15th, 2017 Jon, Michael, Alex
+* DONE: On failure, save instance (add option).
+* DONE: removed "Failing tests message"
+* DONE: Fix requirement for /tmp/es_rally_output.txt
+* DONE: rename "set1" to something more meaningful.
+  * DONE: add better documentation around what runs in parallel.
+* DONE: comment out (deprecate) of non-data driven code in __main__
+* Output last X lines of esrally via a verbosity flag.
+  * Verbosity flag should specify amount of output from script to help debug issues.
+* DONE: Do not use the tmp directory on the remote machine.
+* DONE: Script should fail when disk space reaches 100%
+* DONE: Describe how things run in parallel via threads.
+  * Describe (maybe an image?) on flow of code
+* DONE: Add a run/don't_run option in json!
+* DONE: What if rally config does not exist? What is the error code? Error code is in copy_install_scripts (failed to copy file)
+* DONE: Can we remove python3/ansible/pip3
+* Download specific version of ES/Marvel
+
+
+Jan 8th, 2017, Jon, Michael, Alex
+* Test version 4 (currently using version 3)
+    * Version 4 should detect hangs in rally.
+    * Version 4 should should detect disk space.
+    * Version 4 runs multiple instances.
+* We should be able to run hundreds of test instances.
+* Test results should output to an ES cluster.
+* Next Iteration of Project:
+  * Benchmarks against various products (splunk being more realistic)
+  * Modify tracks and cars in rally (tracks are just config files).
+    * Rally indexes THEN searches.
+    * We should search (dense vs sparse) WHILE indexing.
+      * Continue doubling until reach saturation.
+      * If 256 caches, do 300 unique searches.
+    * Tracks may support this scenario.
+    * In Splunk benchmarking "needle in the haystack search".
+    * 2 types: word vs aggregate search
+  * Use pre-built ES cluster to test against.
+    * Install Marvel plugin
+* Code Updates:
+  * Add "how to run the script" in the readme.
+  * How the script works under the covers:
+    * 22 ports
+    * 0.0.0.0 security
+    * id_rsa keys
+    * how the script knows when it is done.
+    * README needs prerequists: python 2.7 minimum, pip, awscli (installed via pip)

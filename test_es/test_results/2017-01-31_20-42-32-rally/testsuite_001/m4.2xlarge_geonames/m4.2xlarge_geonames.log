@@ -1,0 +1,8 @@
+2017-02-01 01:42:32,319 m4.2xlarge_geonames Creating temporary key pair:ami-test-b4601330-c023-48ce-9712-c02f421cb220 output_id_rsa: ec2-generated-id_rsa-m4.2xlarge_geonames
+2017-02-01 01:42:34,009 
+**************************************************
+m4.2xlarge_geonames Creating Instance in region: us-west-2
+**************************************************
+2017-02-01 01:42:34,993 m4.2xlarge_geonames Existing volume size: 8 (tweaking to 50)
+2017-02-01 01:42:36,142 m4.2xlarge_geonames retrying command: aws ec2 run-instances --region us-west-2 --image-id ami-b04e92d0 --key-name ami-test-b4601330-c023-48ce-9712-c02f421cb220 --placement Tenancy=default --instance-type m4.2xlarge --block-device-mappings file:///var/folders/4l/7x7cm58n5f1cskskv5rt0pvh0000gp/T/test_esrally_6CB7Hf.json --security-group-ids sg-b5fdbdcc, after sleeping: 30s
+2017-02-01 01:43:07,252 m4.2xlarge_geonames retrying command: aws ec2 run-instances --region us-west-2 --image-id ami-b04e92d0 --key-name ami-test-b4601330-c023-48ce-9712-c02f421cb220 --placement Tenancy=default --instance-type m4.2xlarge --block-device-mappings file:///var/folders/4l/7x7cm58n5f1cskskv5rt0pvh0000gp/T/test_esrally_6CB7Hf.json --security-group-ids sg-b5fdbdcc, after sleeping: 30s
