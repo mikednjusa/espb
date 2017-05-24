@@ -3,6 +3,8 @@
 The benchmarking instances will have its own VPC, default public and private subnets, and custom security group. 
 
 The security group policy will be set to the minimum number of permissions: ec2, s3 access. 
+Jon's current security group:
+
 
 IAM roles and instance profiles will also be created for further isolation. 
 
