@@ -15,7 +15,7 @@ Restrict inbound access to TCP on port 5601 for Kibana - logins should be change
 
 (not needed) The benchmarking instances will be put in a private subnet. 
 
-Further security can be applied to the Elasticsearch cluster by adding passwords and data encryption using X-Pack.
+Further security can be applied to the Elasticsearch cluster by adding passwords using X-Pack.
 
 The Cloudformation stack will handle the setting up and tearing down of the networking components. And because it is small and simple and intended to be torn down after testing, it should not add to the overhead of anyone’s system. The stack will create the bucket if it does not exist and a deletion policy will be put in place so that the bucket is not deleted when the stack is. 
 
