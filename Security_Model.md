@@ -10,3 +10,4 @@ The Cloudformation stack will handle the setting up and tearing down of the netw
 
 Another reason for wanting to set up a separate VPC is because it allows us to set the IPs for the elasticsearch nodes. This is necessary in order to create a cluster on separate ec2 instances as in order to connect the nodes they need to know the IP of the other node. 
 
+![Security Model](/Security_Model.png)
