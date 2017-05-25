@@ -8,6 +8,8 @@ services:
       - esrallydata:/usr/share/rally/data
   kibana:
     image: docker.elastic.co/kibana/kibana:5.4.0
+    ports:
+      - "5601:5601"
     environment:
       ELASTICSEARCH_URL: 10.0.0.253:9200
     volumes:
