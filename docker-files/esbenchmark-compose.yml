@@ -1,0 +1,66 @@
+## Name: esbenchmark-compose.yml
+#Description: This file deploys multiple es-benchmark instances in a cluster
+
+#This sample file is from: 
+#https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+
+Notes from page: 
+The following example brings up a cluster comprising two Elasticsearch nodes. To bring up the cluster, use the docker-compose.yml and just type:
+
+docker-compose up
+Note
+docker-compose is not pre-installed with Docker on Linux. Instructions for installing it can be found on the docker-compose webpage.
+
+The node elasticsearch1 listens on localhost:9200 while elasticsearch2 talks to elasticsearch1 over a Docker network.
+
+This example also uses Docker named volumes, called esdata1 and esdata2 which will be created if not already present.
+
+docker-compose.yml:
+
+# begin file #
+
+version: '2'
+services:
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+    container_name: elasticsearch1
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - esnet
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - esnet
+
+volumes:
+  esdata1:
+    driver: local
+  esdata2:
+    driver: local
+
+networks:
+  esnet:
