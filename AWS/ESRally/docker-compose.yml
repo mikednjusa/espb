@@ -1,0 +1,20 @@
+version: '2'
+services:
+  esrally:
+    build:
+      image: docker pull ebuildy/esrally
+    container_name: esrally
+    volumes:
+      - esrallydata:/usr/share/rally/data
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.4.0
+    environment:
+      ELASTICSEARCH_URL: 10.0.0.253:9200
+    volumes:
+      - monitoringdata:/usr/share/kibana/data
+volumes:
+  esrallydata:
+    driver: local
+  monitoringdata:
+    driver: local
+
