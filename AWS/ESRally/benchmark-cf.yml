@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  KeyName:
+    Type: String
+    Default: lambda-test-key
+  PublicSubnet:
+    Type: String
+    Default: subnet-b743baed
+  PrivateSubnet:
+    Type: String
+    Default: subnet-5847be02
+  BenchmarkSG:
+    Type: String
+    Default: sg-0e1c7070
+  ImageId:
+    Type: String
+    Default: ami-c58c1dd3
+  AvailabilityZone:
+    Type: String
+    Default: us-east-1a
+  InstanceType:
+    Type: String
+    Default: m1.small
+  BenchmarkInstance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: !Ref KeyName
+      SecurityGroups:
+      - !Ref BenchmarkSG
+      UserData:
+        Fn::Base64: !Sub |
+          yum -y update
+          yum -y install python-pip
+          pip install -y awscli --upgrade --user
+          yum install -y yum-utils device-mapper-persistent-data lvm2
+          yum makecache fast
+          yum -y install docker-ce
+          pip -y install docker-compose
+          sysctl -w vm.max_map_count=262144
+          systemctl start docker
+          use/rmod -aG docker ec2-user
+          yum -y install git
+          yum -y install aws-cli
+          git clone https://github.com/mikednjusa/espb.git
+          docker-compose up
+          python ES_test.py
+      InstanceType: !Ref InstanceType
+      AvailabilityZone: !Ref AvailabilityZone
+      ImageId: !Ref ImageId
+      SubnetId: !Ref PrivateSubnet
+      Volumes:
+        -
+          VolumeId: !Ref logical name of AWS::EC2::Volume resource
+          Device: /dev/sdk
+      Tags:
+        -
+          Key: Name
+          Value: Benchmark-ec2
+  ESRallyInstance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: !Ref KeyName
+      SecurityGroups:
+      - !Ref BenchmarkSG
+      UserData:
+        Fn::Base64: !Sub |
+          yum -y update
+          yum -y install python-pip
+          pip install -y awscli --upgrade --user
+          yum install -y yum-utils device-mapper-persistent-data lvm2
+          yum makecache fast
+          yum -y install docker-ce
+          pip -y install docker-compose
+          sysctl -w vm.max_map_count=262144
+          systemctl start docker
+          yum -y install git
+          git clone git clone https://github.com/mikednjusa/espb.git
+          docker-compose up
+      InstanceType: !Ref InstanceType
+      AvailabilityZone: !Ref AvailabilityZone
+      ImageId: !Ref ImageId
+      SubnetId: !Ref PublicSubnet
+      Volumes:
+        -
+          VolumeId: !Ref logical name of AWS::EC2::Volume resource
+          Device: /dev/sdk
+      Tags:
+        -
+          Key: Name
+          Value: EsRally-Monitoring
+
