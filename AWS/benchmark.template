@@ -1,35 +1,35 @@
 AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   KeyName:
-    Type: String
-    Default: 'INSTANCE_KEY_PAIR'
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: INSTANCE_KEY_PAIR
   PublicSubnet:
-    Type: String
-    Default: 'subnet-b743baed'
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-b743baed
   PrivateSubnet:
-    Type: String
-    Default: 'subnet-5847be02'
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-5847be02
   BenchmarkSG:
     Type: String
-    Default: 'sg-0e1c7070'
+    Default: sg-0e1c7070
   ImageId:
     Type: String
-    Default: 'ami-c58c1dd3'
+    Default: ami-c58c1dd3
   AvailabilityZone:
     Type: String
-    Default: 'REGION'
+    Default: REGION
   InstanceType:
     Type: String
-    Default: 'INSTANCE_TYPE'
+    Default: INSTANCE_TYPE
   S3Bucket:
     Type: String
-    Default: 'S3_BUCKET'
+    Default: S3_BUCKET
 Resources:
   BenchmarkInstance:
-    Type: 'AWS::EC2::Instance'
+    Type: AWS::EC2::Instance
     Properties:
       KeyName: !Ref KeyName
-      SecurityGroups:
+      SecurityGroupIds:
       - !Ref BenchmarkSG
       UserData:
         Fn::Base64: !Sub |
@@ -57,7 +57,7 @@ Resources:
     Type: 'AWS::EC2::Instance'
     Properties:
       KeyName: !Ref KeyName
-      SecurityGroups:
+      SecurityGroupIds:
       - !Ref BenchmarkSG
       UserData:
         Fn::Base64: !Sub |
@@ -83,4 +83,5 @@ Resources:
       Tags:
         -
           Key: Name
+          Value: EsRally-monitoring
 
