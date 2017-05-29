@@ -7,8 +7,7 @@ import collections
 import requests
 import boto3
 import ConfigParser, os
-
-from ES_Test import ES_Test
+import re
 
 # Parse command line args:
 def parseArgs():
@@ -33,22 +32,6 @@ def parseArgs():
     sys.exit(1)
   return args
 
-def run_single_test(test_suite_name, name, region, instance_type, security_group_ids, test,
-                    root_size_gb, rally_config, save_on_failure=False, debug=True, **kwargs):
-  es_test = ES_Test(test_suite_name=test_suite_name,
-                    name=name,
-                    region=region,
-                    instance_type=instance_type,
-                    security_group_ids=security_group_ids,
-                    test=test,
-                    root_size_gb=root_size_gb,
-                    rally_config=rally_config,
-                    save_on_failure=save_on_failure,
-                    debug=debug)
-  print('running tests...')
-  es_test.run_tests()
-
-
 if __name__ == '__main__':
   version = '0.0.1'
   print('Version: {}'.format(version))
@@ -60,7 +43,7 @@ if __name__ == '__main__':
       data = json.load(df)
     except:
       print('***Error: The following file is not a valid json file: {}'.format(args.data_file))
-        ys.exit(1)
+      sys.exit(1)
 
   # Do some basic validation against the json:
   for test_suite, tests in data['test_suites'].items():
@@ -78,20 +61,29 @@ if __name__ == '__main__':
   instance_type = config.get('esrally', 'INSTANCE_TYPE')
   key_pair = config.get('esrally', 'INSTANCE_KEY_PAIR')
   s3_bucket = config.get('esrally', 'S3_BUCKET')
-
+  region = config.get('esrally', 'REGION')
+  
   # make edits to Cloudformation template
   with open('benchmark.template', 'r') as cffile:
     data=cffile.read()
-    data.replace('NUM_INSTANCES', num_instances)
-    data.replace('INSTANCE_TYPE', instance_type)
-    data.replace('KEY_PAIR', key_pair)
-    data.replace('S3_BUCKET', s3_bucket)
-
-    with open("benchmark.yml", "w") as text_file:
-      text_file.write(data)
-      text_file.close()
+    #data = re.sub('NUM_INSTANCES', num_instances)
+    data = re.sub('INSTANCE_TYPE', instance_type, data)
+    data = re.sub('INSTANCE_KEY_PAIR', key_pair, data)
+    data = re.sub('S3_BUCKET', s3_bucket, data)
+    data = re.sub('DATA_FILE_S3_LOCATION', s3_bucket, data)
+    data = re.sub('REGION', region, data)
     cffile.close()
 
+  with open("benchmark-cf.yml", "w") as text_file:
+    text_file.write(data)
+    text_file.close()
+
+  # push the test file to S3
+  response = boto3.client('s3').upload_file(args.data_file, s3_bucket, 'data_file.json')
+  # upload edited cloudformation template to S3
+  response = boto3.client('s3').upload_file('benchmark-cf.yml', s3_bucket, 'benchmark-cf.yml')
+  
   # start cloudformation stack
-  response = boto3.client('ec2').create_stack(StackName='ES-Benchmarking-Stack', \
-                TemplateBody='benchmark.yml')
+  templateUrl = 'https://s3.amazonaws.com/{0}/benchmark-cf.yml'.format(s3_bucket)
+  response = boto3.client('cloudformation').create_stack(StackName='ES-Benchmarking-Stack', \
+            TemplateURL=templateUrl)
