@@ -55,6 +55,7 @@ Resources:
       AvailabilityZone: !Ref AvailabilityZone
       ImageId: !Ref ImageId
       SubnetId: !Ref PrivateSubnet
+      PrivateIpAddress: 10.0.0.101
       Tags:
         -
           Key: Name
@@ -85,7 +86,14 @@ Resources:
       InstanceType: !Ref InstanceType
       AvailabilityZone: !Ref AvailabilityZone
       ImageId: !Ref ImageId
-      SubnetId: !Ref PublicSubnet
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: 
+            - Ref: BenchmarkSG
+          SubnetId: 
+            Ref: "PublicSubnet"
+      PrivateIpAddress: 10.0.0.100
       Tags:
         -
           Key: Name
