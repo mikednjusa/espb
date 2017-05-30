@@ -1,12 +1,11 @@
 import argparse
 import os
 import sys
-import threading
 import json
 import collections
 import requests
 import boto3
-import ConfigParser, os
+import ConfigParser
 import re
 
 # Parse command line args:

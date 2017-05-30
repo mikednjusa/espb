@@ -560,18 +560,3 @@ class ES_Test():
         self.tear_down_test()
 
 
-if __name__ == '__main__':
-    def run_single_test(test_suite_name, name, region, instance_type, security_group_ids, test,
-                        root_size_gb, rally_config, save_on_failure=False, debug=True, **kwargs):
-      es_test = ES_Test(test_suite_name=test_suite_name,
-                        name=name,
-                        region=region,
-                        instance_type=instance_type,
-                        security_group_ids=security_group_ids,
-                        test=test,
-                        root_size_gb=root_size_gb,
-                        rally_config=rally_config,
-                        save_on_failure=save_on_failure,
-                        debug=debug)
-      print('running tests...')
-      es_test.run_tests()
