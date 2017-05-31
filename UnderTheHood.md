@@ -9,10 +9,10 @@
   * Security Group
 4. The Cloudformation template’s ec2 userdatas will run a bash script that will set up the desired environments. 
   * For the Controller/ES Rally/Monitoring instance:
-    1. Install Docker, Git, AWS CLI and pull the git repo
-    2. Run docker compose to bring up kibana and esrally (I think the controller script doesn’t need to be in a separate container)
+    1. Install Docker
+    2. Run dockerfile to build and run Controller/ES Rally/Monitoring docker instance which will contain elasticsearch (with X-Pack Monitoring enabled), kibana, esrally, and the Controller python script, git, AWS CLI and pull the git repo
     3. Run the test scripts
   * For the benchmarking instance:
-    1. Install Docker, Git and pull the git repo
-    2. Run docker compose to bring up the benchmarking instance
+    1. Install Docker
+    2. Run docker compose to bring up the Elasticsearch benchmarking instance
 5. The testing script will run the desired rally tests specified in the data file. Once it is done, it will save the data from the monitoring instance to the S3 bucket. It will also run a command to delete the cloudformation stack. This will tear down all of the components created -VPC, instances etc. 
