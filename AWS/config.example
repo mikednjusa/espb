@@ -1,6 +1,7 @@
-[esrally]
+[esrally]  # Do not remove this line
 NUM_OF_INSTANCES: 1
 INSTANCE_TYPE: m4.large
-INSTANCE_KEY_PAIR: lambda-test-key.pem
-S3_BUCKET: http://s3.amazonaws.com/bucket/esrally-benchmarking
+INSTANCE_KEY_PAIR: lambda-test-key
+S3_BUCKET: esrally-benchmarking
+REGION: us-east-1b
 
