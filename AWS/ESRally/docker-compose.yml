@@ -1,7 +1,8 @@
 version: '2'
 services:
   esrally:
-    image: ebuildy/esrally
+    build:
+      context: esrally
     container_name: esrally
     volumes:
       - esrallydata:/usr/share/rally/data
