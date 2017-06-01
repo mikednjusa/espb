@@ -12,6 +12,8 @@ import re
 import subprocess
 import shutil
 
+rootpath = '/home/ec2-user/espb/AWS/'
+
 # Parse command line args:
 def parseArgs():
   description = '''
@@ -37,7 +39,7 @@ def run_single_test(test, bucket):
   print bashCommand
   run(bashCommand)
   
-  bashCommand = 'docker cp esrally:/home/es/.rally/logs/ /home/ec2-user/espb/AWS/ESRally/logs'
+  bashCommand = 'docker cp esrally:/home/es/.rally/logs/ /home/ec2-user/espb/AWS/ESRally'
   run(bashCommand)
 
   return
@@ -52,7 +54,7 @@ def run(bashCommand):
 if __name__ == '__main__':
     
   args = parseArgs()
-  #boto3.resource('s3').meta.client.download_file(args.bucket, 'data_file.json', 'data_file.json')
+  boto3.resource('s3').meta.client.download_file(args.bucket, 'data_file.json', 'data_file.json')
   with open('data_file.json') as json_data:
     data = json.load(json_data)
 
