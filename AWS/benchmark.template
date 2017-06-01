@@ -75,6 +75,7 @@ Resources:
           yum -y update
           yum -y upgrade
           yum -y install python-pip
+          pip install boto3
           yum -y install docker
           pip install docker-compose
           yum -y install git
@@ -82,12 +83,13 @@ Resources:
           usermod -aG docker ec2-user
           service docker start
           git clone -b benchmark https://username:password@github.com/mikednjusa/espb.git /home/ec2-user/espb
+          chown ec2-user:ec2-user -R espb
           sysctl -w vm.max_map_count=262144
           /usr/local/bin/docker-compose -f /home/ec2-user/espb/AWS/ESRally/docker-compose.yml up
           docker cp /home/espb/AWS/ESRally/kibana/kibana.yml kibana:/usr/share/kibana/config/kibana.yml
-          docker exec -it kibana mkdir /home/logging
-          docker exec -it kibana chown -R kibana:kibana /home/logging
-          #python run_test.py --bucket ${S3Bucket}
+          docker exec -it -u root kibana mkdir /home/logging
+          docker exec -it -u root kibana chown -R kibana:kibana /home/logging
+          #python /home/ec2-user/espb/AWS/ESRally/run_test.py --bucket ${S3Bucket}
       InstanceType: !Ref InstanceType
       AvailabilityZone: !Ref AvailabilityZone
       ImageId: !Ref ImageId
