@@ -7,7 +7,7 @@ services:
       - cluster.name=docker-cluster
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - network.publish_host="10.0.0.101" 
-      - discovery.zen.ping.unicast.hosts="10.0.0.100" 
+      - discovery.zen.ping.unicast.hosts="10.0.0.102" 
       - discovery.zen.ping_timeout=3s 
       - discovery.zen.minimum_master_nodes=1
     ulimits:
