@@ -33,8 +33,6 @@ Resources:
     Properties:
       KeyName: !Ref KeyName
       IamInstanceProfile: !Ref IamInstanceProfile
-      SecurityGroupIds:
-      - !Ref BenchmarkSG
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -54,8 +52,14 @@ Resources:
       InstanceType: !Ref InstanceType
       AvailabilityZone: !Ref AvailabilityZone
       ImageId: !Ref ImageId
-      SubnetId: !Ref PublicSubnet
-      PrivateIpAddress: 10.0.0.101
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: 
+            - Ref: BenchmarkSG
+          SubnetId: 
+            Ref: PublicSubnet
+          PrivateIpAddress: 10.0.0.101
       Tags:
         -
           Key: Name
@@ -65,8 +69,6 @@ Resources:
     Properties:
       KeyName: !Ref KeyName
       IamInstanceProfile: !Ref IamInstanceProfile
-      SecurityGroupIds:
-      - !Ref BenchmarkSG
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -89,8 +91,14 @@ Resources:
       InstanceType: !Ref InstanceType
       AvailabilityZone: !Ref AvailabilityZone
       ImageId: !Ref ImageId
-      SubnetId: !Ref PublicSubnet
-      PrivateIpAddress: 10.0.0.102
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: 
+            - Ref: BenchmarkSG
+          SubnetId: 
+            Ref: PublicSubnet
+          PrivateIpAddress: 10.0.0.102
       Tags:
         -
           Key: Name
