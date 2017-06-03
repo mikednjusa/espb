@@ -67,4 +67,6 @@ volumes:
     driver: local
   monitoringdata:
     driver: local
+  esdata:
+    driver: local
 
