@@ -11,6 +11,7 @@ import boto3
 import re
 import subprocess
 import shutil
+import zipfile
 
 rootpath = '/home/ec2-user/espb/AWS/'
 
@@ -27,20 +28,29 @@ def parseArgs():
   return parser.parse_args()
 
 
-def run_single_test(test, bucket):
-  #test_params=json.loads(single_test)
-  bashCommand = 'docker cp {0} esrally:/home/es/.rally/rally.ini'.format(test['rally_config'])
+def init_esrally():
+  bashCommand = 'docker exec -it -u root esrally mkdir /home/es/.rally'
   run(bashCommand)
 
   bashCommand = 'docker exec -it -u root esrally chown -R es:es /home/es/.rally'
+  run(bashCommand)
+  return
+
+
+def run_single_test(test, bucket):
+
+  bashCommand = 'docker cp {0} esrally:/home/es/.rally/rally.ini'.format(test['rally_config'])
+  run(bashCommand)
+
+  bashCommand = 'docker exec -it esrally -u root chown es:es /home/es/.rally/rally.ini'
   run(bashCommand)
 
   bashCommand = 'docker exec -it esrally {0}'.format(test['test'])
   print bashCommand
   run(bashCommand)
   
-  bashCommand = 'docker cp esrally:/home/es/.rally/logs/ /home/ec2-user/espb/AWS/ESRally'
-  run(bashCommand)
+  #bashCommand = 'docker cp esrally:/home/es/.rally/logs/ /home/ec2-user/espb/AWS/ESRally'
+  #run(bashCommand)
 
   return
 
@@ -77,7 +87,7 @@ def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
         all_output = output
 
         print 'This is the output from that command, if any:\n{0}'.format(all_output)
-        raise Exception('Command_Error')
+        #raise Exception('Command_Error')
 
     return output, returncode
 
@@ -88,6 +98,8 @@ if __name__ == '__main__':
   boto3.resource('s3').meta.client.download_file(args.bucket, 'data_file.json', 'data_file.json')
   with open('data_file.json') as json_data:
     data = json.load(json_data)
+
+  #init_esrally()
 
   # Run all tests of a test suite in parallel:
   for test_suite, tests in data['test_suites'].items():
@@ -101,10 +113,13 @@ if __name__ == '__main__':
 
           run_single_test(test, args.bucket)
 	  
-	  logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
+	  logpath ='logs'
+    with ZipFile(logpath + test['name']+'-log', 'w') as myzip:
+      myzip.write(logpath)
+    '''
           shutil.make_archive(logpath + test['name']+'-log', 'zip', logpath)
 	  boto3.resource('s3').meta.client.upload_file(logpath+ test['name']+'-log.zip', args.bucket, test['name']+'-log.zip')
-
+    '''
   print('Script is done!')
 
   # tear down stack and benchmarking
