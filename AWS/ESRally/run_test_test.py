@@ -26,8 +26,8 @@ def parseArgs():
   parser.add_argument('--bucket', help='If set, script will read that file to create instances.', required=True)
   return parser.parse_args()
 
-def init_esrally()
-  bashCommand = 'docker exec -it -u root mkdir /home/es/.rally'
+def init_esrally():
+  bashCommand = 'docker exec -it -u root esrally mkdir /home/es/.rally'
   run(bashCommand)
 
   bashCommand = 'docker exec -it -u root esrally chown -R es:es /home/es/.rally'
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     data = json.load(json_data)
 
   init_esrally()
-  
+
   # Run all tests of a test suite in parallel:
   for test_suite, tests in data['test_suites'].items():
       print('Running test suite: {}'.format(test_suite))
