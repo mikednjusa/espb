@@ -113,12 +113,10 @@ if __name__ == '__main__':
 
           run_single_test(test, args.bucket)
 	  
-	  logpath ='logs'
-    with ZipFile(logpath + test['name']+'-log', 'w') as myzip:
-      myzip.write(logpath)
-    '''
-          shutil.make_archive(logpath + test['name']+'-log', 'zip', logpath)
-	  boto3.resource('s3').meta.client.upload_file(logpath+ test['name']+'-log.zip', args.bucket, test['name']+'-log.zip')
+	  logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
+    for subdir, dirs, files in os.walk(logpath):
+      for file in files:
+        boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
     '''
   print('Script is done!')
 
