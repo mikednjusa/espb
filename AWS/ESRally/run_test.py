@@ -60,7 +60,7 @@ def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
         xrange = range
     for i_attempt in xrange(retry_count + 1):
         output = None
-        stdout = Noned
+        stdout = None
         stderr = None
         returncode = None
         try:
@@ -114,6 +114,7 @@ if __name__ == '__main__':
       check_container_exists('kibana')
       check_container_exists('elasticsearch')
       check_container_exists('esrally')
+      time.sleep(60)
       logging.info(str(datetime.datetime.now()) + ': Containers initialized') 
       break
 
