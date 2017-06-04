@@ -44,42 +44,42 @@ def run_single_test(test, bucket):
 
   return
 
-    # General purpose run command:
-    def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
+# General purpose run command:
+def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
+    try:
+        xrange
+    except NameError:
+        xrange = range
+    for i_attempt in xrange(retry_count + 1):
+        output = None
+        stdout = None
+        stderr = None
+        returncode = None
         try:
-            xrange
-        except NameError:
-            xrange = range
-        for i_attempt in xrange(retry_count + 1):
-            output = None
-            stdout = None
-            stderr = None
-            returncode = None
-            try:
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, shell=True)
-                output = p.communicate()[0]
-                returncode = p.returncode
-            except Exception:
-                print 'Error printing '
-            if returncode != 0:
-                # There was an error, lets retry, if possible:
-                if i_attempt != retry_count:
-                    # Only sleep if not end of the loop:
-                    print 'Retrying'
-                    time.sleep(retry_sleep_secs)
-                continue
-            else:
-                # Command was success, let's not retry:
-                break
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, shell=True)
+            output = p.communicate()[0]
+            returncode = p.returncode
+        except Exception:
+            print 'Error printing '
+        if returncode != 0:
+            # There was an error, lets retry, if possible:
+            if i_attempt != retry_count:
+                # Only sleep if not end of the loop:
+                print 'Retrying'
+                time.sleep(retry_sleep_secs)
+            continue
+        else:
+            # Command was success, let's not retry:
+            break
 
-        if returncode != 0 and raiseOnFailure is True:
-            print '***Error in command and raiseOnFailure is True so exiting. CMD:\n{0}'.format(cmd)
-            all_output = output
+    if returncode != 0 and raiseOnFailure is True:
+        print '***Error in command and raiseOnFailure is True so exiting. CMD:\n{0}'.format(cmd)
+        all_output = output
 
-            print 'This is the output from that command, if any:\n{0}'.format(all_output)
-            raise Exception('Command_Error')
+        print 'This is the output from that command, if any:\n{0}'.format(all_output)
+        raise Exception('Command_Error')
 
-        return output, returncode
+    return output, returncode
 
 
 if __name__ == '__main__':
