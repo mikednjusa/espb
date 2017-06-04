@@ -69,10 +69,12 @@ def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
         try:
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, shell=True)
             output = p.communicate()[0]
-            print output
+            logging.info(output)
             returncode = p.returncode
+
         except Exception:
             print 'Error printing '
+            logging.info('Error printing')
         if returncode != 0:
             # There was an error, lets retry, if possible:
             if i_attempt != retry_count:
@@ -85,13 +87,14 @@ def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
         else:
             # Command was success, let's not retry:
             break
-      return
+ 
 
 def check_container_exists(name):
   try:
     client = docker.DockerClient(version='1.24')
     for i in range(0,5):
       if client.containers.get(name).name != name:
+        logging.info('Still waiting on ' + name)
         time.sleep(30)
       else:
         break
@@ -120,7 +123,7 @@ if __name__ == '__main__':
       check_container_exists('kibana')
       check_container_exists('elasticsearch')
       check_container_exists('esrally')
-      time.sleep(300)
+      #time.sleep(300)
       logging.info(str(datetime.datetime.now()) + ': Containers initialized') 
       break
 
@@ -134,25 +137,17 @@ if __name__ == '__main__':
             continue
         test['test_suite_name'] = test_suite
         logging.info(str(datetime.datetime.now()) + ': running test: {0}'.format(test['name']))
-        threads.append(threading.Thread(target=run_single_test, args=(test, args.bucket)))
-        #run_single_test(test, args.bucket)
-  # Start running the threads:
-  print('starting threads...')
-  for t in threads:
-      t.start()
-  # Wait for all threads to stop:
-  print('waiting for threads...')
-  for t in threads:
-        t.join()
+        threads.append(threading.Thread(target=run_single_test, kwargs=test))
+        run_single_test(test, args.bucket)
 
-  try: 
-    logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
-    for subdir, dirs, files in os.walk(logpath):
-      for file in files:
-        boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
-  except Exception as e:
-    logging.info(str(datetime.datetime.now()) + ': error updating logs')
-    logging.exception(str(e))
+        try: 
+          logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
+          for subdir, dirs, files in os.walk(logpath):
+            for file in files:
+              boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
+        except Exception as e:
+          logging.info(str(datetime.datetime.now()) + ': error updating logs')
+          logging.exception(str(e))
 
       
   logging.info(str(datetime.datetime.now()) + ': script finished')
