@@ -83,10 +83,11 @@ Resources:
           usermod -aG docker ec2-user
           service docker start
           git clone -b benchmark https://pikeabot:K1llallhumans@github.com/mikednjusa/espb.git /home/ec2-user/espb
-          chown -R ec2-user:ec2-user espb
+          chown -R ec2-user:ec2-user /home/ec2-user/espb
           mkdir /home/ec2-user/espb/AWS/ESRally/logs
           sysctl -w vm.max_map_count=262144
           nohup /usr/local/bin/docker-compose -f /home/ec2-user/espb/AWS/ESRally/docker-compose.yml up &
+          sleep 60
           python /home/ec2-user/espb/AWS/ESRally/run_test.py --bucket ${S3Bucket}
       InstanceType: !Ref InstanceType
       AvailabilityZone: !Ref AvailabilityZone
