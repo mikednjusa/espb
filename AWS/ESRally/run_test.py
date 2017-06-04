@@ -32,21 +32,24 @@ def parseArgs():
 
 def run_single_test(test, bucket):
   try:
+    print 'copying rally config'
     bashCommand = 'docker cp {0} esrally:/home/es/.rally/rally.ini'.format(test['rally_config'])
-    run(bashCommand)
+    run(bashCommand, retry_count=10)
 
+    print 'changing rally.ini owner'
     bashCommand = 'docker exec -it -u root esrally chown es:es /home/es/.rally/rally.ini'
-    run(bashCommand)
+    run(bashCommand, retry_count=10)
 
     bashCommand = 'docker exec -it esrally {0}'.format(test['test'])
     print bashCommand
-    run(bashCommand)
-
-    bashCommand = 'docker exec -it -u root esrally chmod -R 775 /home/es/.rally/logs'
-    run(bashCommand)
+    run(bashCommand, retry_count=10)
     
+    bashCommand = 'docker exec -it -u root esrally chmod -R 775 /home/es/.rally/logs'
+    run(bashCommand, retry_count=10)
+    
+    print 'copying logs'
     bashCommand = 'docker cp esrally:/home/es/.rally/logs/. /home/ec2-user/espb/AWS/ESRally/logs'
-    run(bashCommand)
+    run(bashCommand, retry_count=10)
   except Exception as e:
     logging.info(datetime.datetime.now())
     logging.exception(str(e))
