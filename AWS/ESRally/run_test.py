@@ -114,7 +114,7 @@ if __name__ == '__main__':
       check_container_exists('kibana')
       check_container_exists('elasticsearch')
       check_container_exists('esrally')
-      time.sleep(60)
+      time.sleep(300)
       logging.info(str(datetime.datetime.now()) + ': Containers initialized') 
       break
 
