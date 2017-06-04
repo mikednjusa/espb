@@ -30,19 +30,6 @@ def parseArgs():
   return parser.parse_args()
 
 
-def init_esrally():
-  try: 
-    bashCommand = 'docker exec -it -u root esrally mkdir /home/es/.rally'
-    run(bashCommand)
-
-    bashCommand = 'docker exec -it -u root esrally chown -R es:es /home/es/.rally'
-    run(bashCommand)
-  except Exception as e:
-    logging.info(datetime.datetime.now())
-    logging.exception(str(e))
-  return
-
-
 def run_single_test(test, bucket):
   try:
     bashCommand = 'docker cp {0} esrally:/home/es/.rally/rally.ini'.format(test['rally_config'])
@@ -73,7 +60,7 @@ def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
         xrange = range
     for i_attempt in xrange(retry_count + 1):
         output = None
-        stdout = None
+        stdout = Noned
         stderr = None
         returncode = None
         try:
@@ -94,6 +81,15 @@ def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
             # Command was success, let's not retry:
             break
 
+def check_container_exists(name):
+  client = docker.DockerClient(version='1.24')
+  for i in range(0,5):
+    if client.container.get(name).name != name:
+      time.sleep(30)
+    else:
+      break
+  return
+
 if __name__ == '__main__':
   logging.info(str(datetime.datetime.now()) + ': starting test')
   args = parseArgs()
@@ -109,12 +105,12 @@ if __name__ == '__main__':
       logging.info(str(datetime.datetime.now()) + ': Still waiting for containers to initalize') 
       time.sleep(30)
     else:
+      # Make sure all containers exist and are up and running
+      check_container_exists('kibana')
+      check_container_exists('elasticsearch')
+      check_container_exists('esrally')
       logging.info(str(datetime.datetime.now()) + ': Containers initialized') 
-      time.sleep(30)
       break
- 
-  logging.info(str(datetime.datetime.now()) + ': Initializing esrally')
-  init_esrally()
 
   # Run all tests of a test suite in parallel:
   for test_suite, tests in data['test_suites'].items():
@@ -127,7 +123,7 @@ if __name__ == '__main__':
           test['test_suite_name'] = test_suite
           logging.info(str(datetime.datetime.now()) + ': running test: {0}'.format(test['name']))
           run_single_test(test, args.bucket)
-          
+
           try: 
             logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
             for subdir, dirs, files in os.walk(logpath):

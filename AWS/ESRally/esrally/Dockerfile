@@ -14,7 +14,10 @@ RUN pip3 install esrally
 RUN apt-get clean && \
         rm -rf /var/lib/apt/lists/*
 
-RUN useradd  -ms /bin/bash es
+RUN useradd  -m -s /bin/bash es
+
+RUN mkdir /home/es/.rally
+RUN chown -R es:es /home/es/.rally
 
 USER es
 
