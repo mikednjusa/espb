@@ -32,24 +32,24 @@ def parseArgs():
 
 def run_single_test(test, bucket):
   try:
-    print 'copying rally config'
+    logging.info('copying rally config')
     bashCommand = 'docker cp {0} esrally:/home/es/.rally/rally.ini'.format(test['rally_config'])
-    run(bashCommand, retry_count=10)
+    run(bashCommand, retry_count=5)
 
-    print 'changing rally.ini owner'
+    logging.info('changing rally.ini owner')
     bashCommand = 'docker exec -it -u root esrally chown es:es /home/es/.rally/rally.ini'
-    run(bashCommand, retry_count=10)
+    run(bashCommand, retry_count=5)
 
     bashCommand = 'docker exec -it esrally {0}'.format(test['test'])
     print bashCommand
-    run(bashCommand, retry_count=10)
-    
+    run(bashCommand, retry_count=5)
+
     bashCommand = 'docker exec -it -u root esrally chmod -R 775 /home/es/.rally/logs'
-    run(bashCommand, retry_count=10)
+    run(bashCommand, retry_count=5)
     
-    print 'copying logs'
+    logging.info('copying logs')
     bashCommand = 'docker cp esrally:/home/es/.rally/logs/. /home/ec2-user/espb/AWS/ESRally/logs'
-    run(bashCommand, retry_count=10)
+    run(bashCommand, retry_count=5)
   except Exception as e:
     logging.info(datetime.datetime.now())
     logging.exception(str(e))
@@ -77,12 +77,15 @@ def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
             # There was an error, lets retry, if possible:
             if i_attempt != retry_count:
                 # Only sleep if not end of the loop:
-                print 'Retrying'
+                logging.info('Retrying')
                 time.sleep(retry_sleep_secs)
+            else:
+              logging.info('too many tries')
             continue
         else:
             # Command was success, let's not retry:
             break
+      return
 
 def check_container_exists(name):
   try:
@@ -126,21 +129,32 @@ if __name__ == '__main__':
       print('Running test suite: {}'.format(test_suite))
       threads = []
       for test in tests:
-          if 'do_run' in test and not test['do_run']:
-              print("Skipping: {} in {} because do_run is set to false.".format(test['name'], test_suite))
-              continue
-          test['test_suite_name'] = test_suite
-          logging.info(str(datetime.datetime.now()) + ': running test: {0}'.format(test['name']))
-          run_single_test(test, args.bucket)
+        if 'do_run' in test and not test['do_run']:
+            print("Skipping: {} in {} because do_run is set to false.".format(test['name'], test_suite))
+            continue
+        test['test_suite_name'] = test_suite
+        logging.info(str(datetime.datetime.now()) + ': running test: {0}'.format(test['name']))
+        threads.append(threading.Thread(target=run_single_test, args=(test, args.bucket)))
+        #run_single_test(test, args.bucket)
+  # Start running the threads:
+  print('starting threads...')
+  for t in threads:
+      t.start()
+  # Wait for all threads to stop:
+  print('waiting for threads...')
+  for t in threads:
+        t.join()
 
-          try: 
-            logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
-            for subdir, dirs, files in os.walk(logpath):
-              for file in files:
-                boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
-          except Exception as e:
-            logging.info(str(datetime.datetime.now()) + ': error updating logs')
-            logging.exception(str(e))
+  try: 
+    logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
+    for subdir, dirs, files in os.walk(logpath):
+      for file in files:
+        boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
+  except Exception as e:
+    logging.info(str(datetime.datetime.now()) + ': error updating logs')
+    logging.exception(str(e))
+
+      
   logging.info(str(datetime.datetime.now()) + ': script finished')
   print('Script is done!')
   
