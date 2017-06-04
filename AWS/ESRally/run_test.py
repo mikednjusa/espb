@@ -2,12 +2,17 @@ import os
 from os import listdir
 from os.path import isfile, join
 import sys
-import time
+import time, datetime
 import argparse
 import json
 import boto3
 import docker
 import zipfile
+import logging
+
+LOG_FILENAME = 'logging.out'
+logging.basicConfig(filename=LOG_FILENAME,level=logging.INFO)
+
 
 rootpath = '/home/ec2-user/espb/AWS/'
 
@@ -63,12 +68,14 @@ def run_single_test(test, bucket):
 
 
 if __name__ == '__main__':
-    
+  logging.info(datetime.datetime.now())  
+  logging.info('starting test')
   args = parseArgs()
   boto3.resource('s3').meta.client.download_file(args.bucket, 'data_file.json', 'data_file.json')
   with open('data_file.json') as json_data:
     data = json.load(json_data)
-
+  logging.info(datetime.datetime.now())  
+  logging.info('waiting for containers to initalize') 
   client = docker.from_env()
   for i in range(0,10):
     if len(client.containers.list()) < 3:
@@ -77,6 +84,8 @@ if __name__ == '__main__':
       time.sleep(30)
       break
 
+  logging.info(datetime.datetime.now())  
+  logging.info('containers initialized') 
   init_esrally()
 
   # Run all tests of a test suite in parallel:
@@ -88,14 +97,16 @@ if __name__ == '__main__':
               print("Skipping: {} in {} because do_run is set to false.".format(test['name'], test_suite))
               continue
           test['test_suite_name'] = test_suite
-
+          logging.info(datetime.datetime.now())  
+          logging.info('running test: {0}'.format(test['name']))
           run_single_test(test, args.bucket)
 	  
       	  logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
           for subdir, dirs, files in os.walk(logpath):
             for file in files:
               boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
-
+  logging.info(datetime.datetime.now())  
+  logging.info('script finished')
   print('Script is done!')
 
   # tear down stack and benchmarking
