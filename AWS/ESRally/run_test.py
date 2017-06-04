@@ -82,12 +82,17 @@ def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
             break
 
 def check_container_exists(name):
-  client = docker.DockerClient(version='1.24')
-  for i in range(0,5):
-    if client.container.get(name).name != name:
-      time.sleep(30)
-    else:
-      break
+  try:
+    client = docker.DockerClient(version='1.24')
+    for i in range(0,5):
+      if client.containers.get(name).name != name:
+        time.sleep(30)
+      else:
+        break
+  except Exception as e:
+    logging.info(str(datetime.datetime.now())+": container {} not found".format(name))
+    logging.exception(str(e))
+    sys.exit(1)
   return
 
 if __name__ == '__main__':
