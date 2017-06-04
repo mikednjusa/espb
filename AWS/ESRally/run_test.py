@@ -127,8 +127,9 @@ if __name__ == '__main__':
           test['test_suite_name'] = test_suite
           logging.info(str(datetime.datetime.now()) + ': running test: {0}'.format(test['name']))
           run_single_test(test, args.bucket)
-	        try: 
-        	  logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
+          
+          try: 
+            logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
             for subdir, dirs, files in os.walk(logpath):
               for file in files:
                 boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
