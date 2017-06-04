@@ -10,7 +10,6 @@ import requests
 import boto3
 import re
 import subprocess
-import shutil
 import zipfile
 
 rootpath = '/home/ec2-user/espb/AWS/'
@@ -42,15 +41,18 @@ def run_single_test(test, bucket):
   bashCommand = 'docker cp {0} esrally:/home/es/.rally/rally.ini'.format(test['rally_config'])
   run(bashCommand)
 
-  bashCommand = 'docker exec -it esrally -u root chown es:es /home/es/.rally/rally.ini'
+  bashCommand = 'docker exec -it -u root esrally chown es:es /home/es/.rally/rally.ini'
   run(bashCommand)
 
   bashCommand = 'docker exec -it esrally {0}'.format(test['test'])
   print bashCommand
   run(bashCommand)
+
+  bashCommand = 'docker exec -it -u root esrally chmod -R 775 /home/es/.rally/logs'
+  run(bashCommand)
   
-  #bashCommand = 'docker cp esrally:/home/es/.rally/logs/ /home/ec2-user/espb/AWS/ESRally'
-  #run(bashCommand)
+  bashCommand = 'docker cp esrally:/home/es/.rally/logs/ /home/ec2-user/espb/AWS/ESRally'
+  run(bashCommand)
 
   return
 
@@ -99,7 +101,7 @@ if __name__ == '__main__':
   with open('data_file.json') as json_data:
     data = json.load(json_data)
 
-  #init_esrally()
+  init_esrally()
 
   # Run all tests of a test suite in parallel:
   for test_suite, tests in data['test_suites'].items():
