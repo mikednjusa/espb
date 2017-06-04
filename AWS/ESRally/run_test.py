@@ -117,7 +117,7 @@ if __name__ == '__main__':
     for subdir, dirs, files in os.walk(logpath):
       for file in files:
         boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
-    '''
+
   print('Script is done!')
 
   # tear down stack and benchmarking
