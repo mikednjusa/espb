@@ -8,6 +8,7 @@ import json
 import boto3
 import docker
 import zipfile
+import subprocess
 import logging
 
 LOG_FILENAME = 'logging.out'
@@ -31,14 +32,11 @@ def parseArgs():
 
 def init_esrally():
   try: 
-    client = docker.DockerClient(version='1.24')
-    container = client.containers.get('esrally')
+    bashCommand = 'docker exec -it -u root esrally mkdir /home/es/.rally'
+    run(bashCommand)
 
-    cmd = 'mkdir /home/es/.rally'
-    container.exec_run(cmd, tty=True, privileged=False, user='root')
-
-    cmd = 'chown -R es:es /home/es/.rally'
-    container.exec_run(cmd, tty=True, privileged=False, user='root')
+    bashCommand = 'docker exec -it -u root esrally chown -R es:es /home/es/.rally'
+    run(bashCommand)
   except Exception as e:
     logging.info(datetime.datetime.now())
     logging.exception(str(e))
@@ -47,31 +45,54 @@ def init_esrally():
 
 def run_single_test(test, bucket):
   try:
-    client = docker.DockerClient(version='1.24')
-    container = client.containers.get('esrally')
+    bashCommand = 'docker cp {0} esrally:/home/es/.rally/rally.ini'.format(test['rally_config'])
+    run(bashCommand)
 
-    cmd = 'mkdir /home/es/.rally'
-    container.exec_run(cmd, tty=True, privileged=False, user='root')
+    bashCommand = 'docker exec -it -u root esrally chown es:es /home/es/.rally/rally.ini'
+    run(bashCommand)
+
+    bashCommand = 'docker exec -it esrally {0}'.format(test['test'])
+    print bashCommand
+    run(bashCommand)
+
+    bashCommand = 'docker exec -it -u root esrally chmod -R 775 /home/es/.rally/logs'
+    run(bashCommand)
     
-    #cmd = 'docker cp {0} esrally:/home/es/.rally/rally.ini'.format(test['rally_config'])
-    container.put_archive('/home/es/.rally/rally.ini', test['rally_config'])
-
-    cmd = 'chown es:es /home/es/.rally/rally.ini'
-    container.exec_run(cmd, tty=True, privileged=False, user='root')
-
-    cmd= "test['test']"
-    container.exec_run(cmd, tty=True, privileged=False, user='root')
-
-    cmd = 'chmod -R 775 /home/es/.rally/logs'
-    container.exec_run(cmd, tty=True, privileged=False, user='root')
-    
-    #cmd = 'docker cp esrally:/home/es/.rally/logs/. /home/ec2-user/espb/AWS/ESRally/logs'
-    container.get_archive('/home/es/.rally/logs/.')
+    bashCommand = 'docker cp esrally:/home/es/.rally/logs/. /home/ec2-user/espb/AWS/ESRally/logs'
+    run(bashCommand)
   except Exception as e:
     logging.info(datetime.datetime.now())
     logging.exception(str(e))
   return
 
+# General purpose run command:
+def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
+    try:
+        xrange
+    except NameError:
+        xrange = range
+    for i_attempt in xrange(retry_count + 1):
+        output = None
+        stdout = None
+        stderr = None
+        returncode = None
+        try:
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, shell=True)
+            output = p.communicate()[0]
+            print output
+            returncode = p.returncode
+        except Exception:
+            print 'Error printing '
+        if returncode != 0:
+            # There was an error, lets retry, if possible:
+            if i_attempt != retry_count:
+                # Only sleep if not end of the loop:
+                print 'Retrying'
+                time.sleep(retry_sleep_secs)
+            continue
+        else:
+            # Command was success, let's not retry:
+            break
 
 if __name__ == '__main__':
   logging.info(str(datetime.datetime.now()) + ': starting test')
@@ -92,7 +113,6 @@ if __name__ == '__main__':
       time.sleep(30)
       break
  
-  
   logging.info(str(datetime.datetime.now()) + ': Initializing esrally')
   init_esrally()
 
@@ -107,11 +127,14 @@ if __name__ == '__main__':
           test['test_suite_name'] = test_suite
           logging.info(str(datetime.datetime.now()) + ': running test: {0}'.format(test['name']))
           run_single_test(test, args.bucket)
-	  
-      	  logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
-          for subdir, dirs, files in os.walk(logpath):
-            for file in files:
-              boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
+	        try: 
+        	  logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
+            for subdir, dirs, files in os.walk(logpath):
+              for file in files:
+                boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
+          except Exception as e:
+            logging.info(str(datetime.datetime.now()) + ': error updating logs')
+            logging.exception(str(e))
   logging.info(str(datetime.datetime.now()) + ': script finished')
   print('Script is done!')
   
