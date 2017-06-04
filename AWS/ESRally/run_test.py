@@ -51,7 +51,7 @@ def run_single_test(test, bucket):
   bashCommand = 'docker exec -it -u root esrally chmod -R 775 /home/es/.rally/logs'
   run(bashCommand)
   
-  bashCommand = 'docker cp esrally:/home/es/.rally/logs/ /home/ec2-user/espb/AWS/ESRally'
+  bashCommand = 'docker cp esrally:/home/es/.rally/logs/. /home/ec2-user/espb/AWS/ESRally/logs'
   run(bashCommand)
 
   return
