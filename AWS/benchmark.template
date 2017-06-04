@@ -86,7 +86,7 @@ Resources:
           chown -R ec2-user:ec2-user /home/ec2-user/espb
           mkdir /home/ec2-user/espb/AWS/ESRally/logs
           sysctl -w vm.max_map_count=262144
-          nohup /usr/local/bin/docker-compose -f /home/ec2-user/espb/AWS/ESRally/docker-compose.yml up &
+          /usr/local/bin/docker-compose -f /home/ec2-user/espb/AWS/ESRally/docker-compose.yml up -d
           sleep 60
           python /home/ec2-user/espb/AWS/ESRally/run_test.py --bucket ${S3Bucket}
       InstanceType: !Ref InstanceType
