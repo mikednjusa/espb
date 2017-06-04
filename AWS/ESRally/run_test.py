@@ -113,10 +113,10 @@ if __name__ == '__main__':
 
           run_single_test(test, args.bucket)
 	  
-	  logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
-    for subdir, dirs, files in os.walk(logpath):
-      for file in files:
-        boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
+      	  logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
+          for subdir, dirs, files in os.walk(logpath):
+            for file in files:
+              boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
 
   print('Script is done!')
 
