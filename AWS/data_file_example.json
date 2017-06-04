@@ -4,7 +4,7 @@
       {
         "name": "large_track_tiny1",
         "test": "esrally --pipeline=from-distribution --distribution-version=5.0.0 --track=geonames --test-mode",
-        "rally_config": "conditional_install_items/rally_csv.ini",
+        "rally_config": "/home/ec2-user/espb/AWS/ESRally/esrally/rally_ini/rally_es.ini",
         "root_size_gb": 16,
         "do_run": false,
         "save_on_failure": false
@@ -12,9 +12,9 @@
       {
         "name": "large_track_tiny2",
         "test": "esrally --pipeline=from-distribution --distribution-version=5.0.0 --track=geonames --test-mode",
-        "rally_config": "conditional_install_items/rally_es.ini",
+        "rally_config": "/home/ec2-user/espb/AWS/ESRally/esrally/rally_ini/rally_csv.ini",
         "root_size_gb": 16,
-        "do_run": false,
+        "do_run": true,
         "save_on_failure": false
       }
     ],
@@ -22,7 +22,7 @@
       {
         "name": "large_track_tiny1",
         "test": "esrally --pipeline=from-distribution --distribution-version=5.0.0 --track=geonames --test-mode",
-        "rally_config": "conditional_install_items/rally_csv.ini",
+        "rally_config": "/home/ec2-user/espb/AWS/ESRally/esrally/rally_ini/rally_csv.ini",
         "root_size_gb": 16,
         "do_run": false,
         "save_on_failure": false
