@@ -10,7 +10,6 @@ import requests
 import boto3
 import re
 import subprocess
-import shutil
 import zipfile
 
 rootpath = '/home/ec2-user/espb/AWS/'
@@ -29,7 +28,7 @@ def parseArgs():
 
 
 def init_esrally():
-  bashCommand = 'docker exec -it -u esrally mkdir /home/es/.rally'
+  bashCommand = 'docker exec -it -u root esrally mkdir /home/es/.rally'
   run(bashCommand)
 
   bashCommand = 'docker exec -it -u root esrally chown -R es:es /home/es/.rally'
