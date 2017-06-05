@@ -37,14 +37,14 @@ def run_single_test(test, bucket):
     run(bashCommand, retry_count=5)
 
     logging.info('changing rally.ini owner')
-    bashCommand = 'docker exec -it -u root esrally chown es:es /home/es/.rally/rally.ini'
+    bashCommand = 'docker exec -i -u root esrally chown es:es /home/es/.rally/rally.ini'
     run(bashCommand, retry_count=5)
 
-    bashCommand = 'docker exec -it esrally {0}'.format(test['test'])
+    bashCommand = 'docker exec -i esrally {0}'.format(test['test'])
     print bashCommand
     run(bashCommand, retry_count=5)
 
-    bashCommand = 'docker exec -it -u root esrally chmod -R 775 /home/es/.rally/logs'
+    bashCommand = 'docker exec -i -u root esrally chmod -R 775 /home/es/.rally/logs'
     run(bashCommand, retry_count=5)
     
     logging.info('copying logs')
