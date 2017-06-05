@@ -1,11 +1,12 @@
 ## To Do:
 
 1. Finish configuring and debugging the elasticsearch monitoring
-2. Pull the monitoring logs to S3
-3. Save CSV files to S3
-4. Add AWS networking, i.e. VPC, subnet, security groups etc. 
-5. Run multiple tests and check if threading will be needed
-6. Make sure volume stores are set up correctly 
+2. Fix esrally metrics store setup
+3. Pull the monitoring logs to S3
+4. Save CSV files to S3
+5. Add AWS networking, i.e. VPC, subnet, security groups etc. 
+6. Run multiple tests and check if threading will be needed
+7. Make sure volume stores are set up correctly 
 
 ### Finished: 
 
