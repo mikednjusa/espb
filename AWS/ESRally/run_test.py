@@ -137,7 +137,6 @@ if __name__ == '__main__':
             continue
         test['test_suite_name'] = test_suite
         logging.info(str(datetime.datetime.now()) + ': running test: {0}'.format(test['name']))
-        threads.append(threading.Thread(target=run_single_test, kwargs=test))
         run_single_test(test, args.bucket)
 
         try: 
