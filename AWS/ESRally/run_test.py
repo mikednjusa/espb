@@ -12,7 +12,7 @@ import subprocess
 import logging
 
 LOG_FILENAME = 'logging.out'
-logging.basicConfig(filename=LOG_FILENAME,level=logging.INFO)
+logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 
 rootpath = '/home/ec2-user/espb/AWS/'
@@ -40,10 +40,12 @@ def run_single_test(test, bucket):
     bashCommand = 'docker exec -i -u root esrally chown es:es /home/es/.rally/rally.ini'
     run(bashCommand, retry_count=5)
 
+    logging.info('running test command')
     bashCommand = 'docker exec -i esrally {0}'.format(test['test'])
     print bashCommand
     run(bashCommand, retry_count=5)
 
+    logging.info('changing rally log owner')
     bashCommand = 'docker exec -i -u root esrally chmod -R 775 /home/es/.rally/logs'
     run(bashCommand, retry_count=5)
     
@@ -70,6 +72,7 @@ def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, shell=True)
             output = p.communicate()[0]
             logging.info(output)
+            logging.info(p.returncode)
             returncode = p.returncode
 
         except Exception:
