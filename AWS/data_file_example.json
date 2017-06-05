@@ -11,8 +11,8 @@
       },
       {
         "name": "large_track_tiny2",
-        "test": "esrally --pipeline=from-distribution --distribution-version=5.0.0 --track=geonames --test-mode",
-        "rally_config": "/home/ec2-user/espb/AWS/ESRally/esrally/rally_ini/rally_csv.ini",
+        "test": "esrally --target-hosts=10.0.0.101:9200 --pipeline=benchmark-only --track=geonames --test-mode --client-options=\"basic_auth_user:'elastic',basic_auth_password:'changeme'\"",
+        "rally_config": "/home/nibbler/Upwork/Benchmark/espb/AWS/ESRally/esrally/rally_ini/rally_es.ini",
         "root_size_gb": 16,
         "do_run": true,
         "save_on_failure": false
