@@ -7,6 +7,8 @@
 5. Save CSV files to S3
 6. Run multiple tests and check if threading will be needed
 7. Make sure volume stores are set up correctly 
+8. Reorganize S3 logging buckets so it's not just a data dump
+9. Look into using the Docker Python API again
 
 ### Finished: 
 

@@ -59,7 +59,11 @@ def run_single_test(test, bucket):
     logging.exception(str(e))
   return
 
-# General purpose run command:
+'''
+  General purpose run command. Taken and modified slightly from original ES_Test.py
+  Runs bash commands via Python. Tried using the Python Docker API, but was having client/server
+  version issues and could not get the API to work properly. May need to be re-explored in the future.
+'''
 def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
     try:
         xrange
@@ -93,7 +97,11 @@ def run(cmd, raiseOnFailure=True, retry_count=0, retry_sleep_secs=30):
             # Command was success, let's not retry:
             break
  
-
+'''
+  Make sure a container exists and can be referenced by name. 
+  It can take several minutes for the images to build and the 
+  container services to be completely up and running
+'''
 def check_container_exists(name):
   try:
     client = docker.DockerClient(version='1.24')
@@ -119,23 +127,24 @@ if __name__ == '__main__':
 
   client = docker.DockerClient(version='1.24')
 
+  # Make sure all containers exist and are up and running
+  # It takes time for Docker images and container services to be up and running
   for i in range(0,10):
     if len(client.containers.list()) < 3:
       logging.info(str(datetime.datetime.now()) + ': Still waiting for containers to initalize') 
       time.sleep(30)
     else:
-      # Make sure all containers exist and are up and running
       check_container_exists('kibana')
       check_container_exists('elasticsearch')
       check_container_exists('esrally')
-      #time.sleep(300)
       logging.info(str(datetime.datetime.now()) + ': Containers initialized') 
       break
 
-  # Run all tests of a test suite in parallel:
+  # Run test suites. Still linear run -need to explore threading and parallel running of tests
   for test_suite, tests in data['test_suites'].items():
       print('Running test suite: {}'.format(test_suite))
       threads = []
+      # Run a single test
       for test in tests:
         if 'do_run' in test and not test['do_run']:
             print("Skipping: {} in {} because do_run is set to false.".format(test['name'], test_suite))
@@ -146,6 +155,7 @@ if __name__ == '__main__':
 
         logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
         # Get esrally logs and save to S3
+        # right now just dumping to S3 bucket. Will need to add better organization
         try: 
           for subdir, dirs, files in os.walk(logpath):
             for file in files:
