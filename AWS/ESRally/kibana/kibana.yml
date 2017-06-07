@@ -7,4 +7,4 @@ elasticsearch.url: http://172.18.0.3:9200
 elasticsearch.username: elastic
 elasticsearch.password: changeme
 xpack.monitoring.ui.container.elasticsearch.enabled: true
-logging.dest: /usr/share/elasticsearch/rally-output
+logging.dest: /home/ec2-user
