@@ -7,6 +7,9 @@ services:
       - esrallydata:/usr/share/rally/data
     stdin_open: true
     tty: true
+  networks:
+    es_net:
+      ipv4_address: 172.25.0.1
   kibana:
     build: kibana
     container_name: kibana
@@ -16,6 +19,9 @@ services:
       ELASTICSEARCH_URL: http://10.0.0.101:9200
     volumes:
       - monitoringdata:/usr/share/kibana/data  
+    networks:
+      es_net:
+        ipv4_address: 172.25.0.2    
   elasticsearch:
     build: /home/ec2-user/espb/AWS/ESBenchmark
     container_name: elasticsearch
