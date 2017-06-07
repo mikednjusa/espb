@@ -175,7 +175,7 @@ if __name__ == '__main__':
           base64string = base64.b64encode('%s:%s' % (username, password))
           request.add_header("Authorization", "Basic %s" % base64string)   
           result = urllib2.urlopen(request)
-          f = open('metrics_store.json', 'w')
+          f = open(logpath+'metrics_store.json', 'w')
           f.write(result.read())
           f.close()
           boto3.resource('s3').meta.client.upload_file(logpath+'metrics_store.json', args.bucket, 'metrics_store.json')
