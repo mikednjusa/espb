@@ -1,14 +1,13 @@
 ## To Do:
 
-1. Finish configuring and debugging the elasticsearch monitoring
-2. Fix esrally metrics store setup
-3. Add AWS networking, i.e. VPC, subnet, security groups etc. 
-4. Pull the monitoring logs to S3
-5. Save CSV files to S3
-6. Run multiple tests and check if threading will be needed
-7. Make sure volume stores are set up correctly 
-8. Reorganize S3 logging buckets so it's not just a data dump
-9. Look into using the Docker Python API again
+1. Add AWS networking, i.e. VPC, subnet, security groups etc. 
+2. Pull the monitoring logs to S3
+3. Save CSV files to S3
+4. Run multiple tests and check if threading will be needed
+5. Make sure volume stores are set up correctly 
+6. Reorganize S3 logging buckets so it's not just a data dump
+7. Look into using the Docker Python API again
+8. Add teradown option?
 
 ### Finished: 
 
@@ -24,3 +23,5 @@
   chown and chmod that aren't necessary if running from command line.
   - Containers take time to spin up and checks needed to be added
 4. Wrote run scripts for user as well as the python script to run the testing
+5. Finish configuring and debugging the elasticsearch monitoring
+6. Fix esrally metrics store setup
