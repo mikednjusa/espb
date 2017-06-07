@@ -8,6 +8,8 @@ import json
 import boto3
 import docker
 import zipfile
+import urllib2
+import base64
 import subprocess
 import logging
 
@@ -40,8 +42,8 @@ def run_single_test(test, bucket):
     bashCommand = 'docker exec -i -u root esrally chown es:es /home/es/.rally/rally.ini'
     run(bashCommand, retry_count=5)
 
-    logging.info('running test command')
     bashCommand = 'docker exec -i esrally {0}'.format(test['test'])
+    logging.info('running test command {}'.format(test['test']))
     print bashCommand
     run(bashCommand, retry_count=5)
 
@@ -142,16 +144,34 @@ if __name__ == '__main__':
         logging.info(str(datetime.datetime.now()) + ': running test: {0}'.format(test['name']))
         run_single_test(test, args.bucket)
 
+        logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
+        # Get esrally logs and save to S3
         try: 
-          logpath ='/home/ec2-user/espb/AWS/ESRally/logs/'
           for subdir, dirs, files in os.walk(logpath):
             for file in files:
               boto3.resource('s3').meta.client.upload_file(logpath+file, args.bucket, file)
         except Exception as e:
-          logging.info(str(datetime.datetime.now()) + ': error updating logs')
+          logging.info(str(datetime.datetime.now()) + ': error saving rally logs')
           logging.exception(str(e))
 
-      
+        #Get monitoring metrics and save to S3
+        #curl -u elastic -XGET '172.18.0.2:9200/rally-2017/metrics/_search?q=environment:benchmark'
+        try:
+          username = 'elastic'
+          password = 'changeme'
+          year = datetime.datetime.now().year
+          url = 'http://172.18.0.2:9200/rally-{}/metrics/_search?q=environment:benchmark'.format(year)
+          request = urllib2.Request(url)
+          base64string = base64.b64encode('%s:%s' % (username, password))
+          request.add_header("Authorization", "Basic %s" % base64string)   
+          result = urllib2.urlopen(request)
+          f = open('metrics_store.json', 'w')
+          f.write(result.read())
+          f.close()
+          boto3.resource('s3').meta.client.upload_file(logpath+'metrics_store.json', args.bucket, 'metrics_store.json')
+        except Exception as e:
+          logging.info(str(datetime.datetime.now()) + ': error saving metrics store')
+          logging.exception(str(e))
   logging.info(str(datetime.datetime.now()) + ': script finished')
   print('Script is done!')
   
