@@ -165,12 +165,12 @@ if __name__ == '__main__':
           logging.exception(str(e))
 
         #Get monitoring metrics and save to S3
-        #curl -u elastic -XGET '172.18.0.2:9200/rally-2017/metrics/_search?q=environment:benchmark'
+        #curl -u elastic -XGET '172.25.0.2:9200/rally-2017/metrics/_search?q=environment:benchmark'
         try:
           username = 'elastic'
           password = 'changeme'
           year = datetime.datetime.now().year
-          url = 'http://172.18.0.2:9200/rally-{}/metrics/_search?q=environment:benchmark'.format(year)
+          url = 'http://172.25.0.3:9200/rally-{}/metrics/_search?q=environment:benchmark'.format(year)
           request = urllib2.Request(url)
           base64string = base64.b64encode('%s:%s' % (username, password))
           request.add_header("Authorization", "Basic %s" % base64string)   
