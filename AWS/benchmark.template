@@ -46,7 +46,7 @@ Resources:
           usermod -aG docker ec2-user
           service docker start
           sysctl -w vm.max_map_count=262144
-          git clone -b benchmark https://@github.com/mikednjusa/espb.git /home/ec2-user/espb
+          git clone -b benchmark https://pikeabot:K1llallhumans@github.com/mikednjusa/espb.git /home/ec2-user/espb
           chown -R ec2-user:ec2-user /home/ec2-user/espb
           /usr/local/bin/docker-compose -f /home/ec2-user/espb/AWS/ESBenchmark/docker-compose.yml up
       InstanceType: !Ref InstanceType
@@ -82,15 +82,11 @@ Resources:
           yum -y upgrade
           usermod -aG docker ec2-user
           service docker start
-          git clone -b benchmark https://@github.com/mikednjusa/espb.git /home/ec2-user/espb
+          git clone -b benchmark https://pikeabot:K1llallhumans@github.com/mikednjusa/espb.git /home/ec2-user/espb
           mkdir /home/ec2-user/espb/AWS/ESRally/logs
           chown -R ec2-user:ec2-user /home/ec2-user/espb
           sysctl -w vm.max_map_count=262144
           /usr/local/bin/docker-compose -f /home/ec2-user/espb/AWS/ESRally/docker-compose.yml up -d
-          if [ $(docker inspect -f {{.State.Running}} esrally) = false ]; then sleep 30; fi
-          if [ $(docker inspect -f {{.State.Running}} kibana) = false ]; then sleep 30; fi
-          if [ $(docker inspect -f {{.State.Running}} elasticsearch) = false ]; then sleep 30; fi
-          sleep 60
           python /home/ec2-user/espb/AWS/ESRally/run_test.py --bucket ${S3Bucket}
       InstanceType: !Ref InstanceType
       AvailabilityZone: !Ref AvailabilityZone
@@ -107,4 +103,3 @@ Resources:
         -
           Key: Name
           Value: EsRally-monitoring
-
