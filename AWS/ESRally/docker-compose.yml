@@ -7,9 +7,9 @@ services:
       - esrallydata:/usr/share/rally/data
     stdin_open: true
     tty: true
-  networks:
-    es_net:
-      ipv4_address: 172.25.0.1
+    networks:
+      es_net:
+        ipv4_address: 172.25.0.1d
   kibana:
     build: kibana
     container_name: kibana
