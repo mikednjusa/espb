@@ -3,8 +3,8 @@
 
 server.name: kibana
 server.host: "0"
-elasticsearch.url: http://10.0.0.101:9200
+elasticsearch.url: http://172.18.0.3:9200
 elasticsearch.username: elastic
 elasticsearch.password: changeme
 xpack.monitoring.ui.container.elasticsearch.enabled: true
-logging.dest: /home/logging
+logging.dest: /usr/share/elasticsearch/rally-output
