@@ -36,8 +36,8 @@ services:
       - 9200:9200
       - 9300:9300
     networks:
-      app_net:
-        ipv4_address: 172.18.0.3
+      es_net:
+        ipv4_address: 172.25.0.3
 volumes:
   esrallydata:
     driver: local
@@ -46,11 +46,11 @@ volumes:
   esdata:
     driver: local
 networks:
-  app_net:
+  es_net:
     driver: bridge
     ipam:
       driver: default
       config:
-      - subnet: 172.18.0.0/16
-        gateway: 172.18.0.1
+      - subnet: 172.25.0.0/16
+        gateway: 172.25.0.1
 
