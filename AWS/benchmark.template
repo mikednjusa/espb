@@ -61,7 +61,6 @@ Resources:
   ESRallyInstance:
     Type: 'AWS::EC2::Instance'
     Properties:
-      DependsOn: BenchmarkS3Bucket
       KeyName: !Ref KeyName
       IamInstanceProfile: !Ref IamInstanceProfile
       UserData:
