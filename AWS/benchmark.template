@@ -52,8 +52,8 @@ Resources:
           GroupSet: 
             - Ref: BenchmarkSecurityGroup
           SubnetId: 
-            Ref: BenchmarkPublicSubnet
-          PrivateIpAddress: 10.10.0.101
+            Ref: BenchmarkPrivateSubnet
+          PrivateIpAddress: 10.10.1.101
       Tags:
         -
           Key: Name
@@ -91,7 +91,7 @@ Resources:
           GroupSet: 
             - Ref: BenchmarkSecurityGroup
           SubnetId: 
-            Ref: BenchmarkPrivateSubnet
+            Ref: BenchmarkPublicSubnet
           PrivateIpAddress: 10.10.0.102
       Tags:
         -
