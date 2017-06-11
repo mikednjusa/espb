@@ -40,7 +40,7 @@ Resources:
           usermod -aG docker ec2-user
           service docker start
           sysctl -w vm.max_map_count=262144
-          git clone -b benchmark https://${username}:${password}@github.com/mikednjusa/espb.git /home/ec2-user/espb
+          git clone -b benchmark0.1 https://${username}:${password}@github.com/mikednjusa/espb.git /home/ec2-user/espb
           chown -R ec2-user:ec2-user /home/ec2-user/espb
           /usr/local/bin/docker-compose -f /home/ec2-user/espb/AWS/ESBenchmark/docker-compose.yml up
       InstanceType: !Ref InstanceType
@@ -77,7 +77,7 @@ Resources:
           yum -y upgrade
           usermod -aG docker ec2-user
           service docker start
-          git clone -b benchmark https://${username}:${password}@github.com/mikednjusa/espb.git /home/ec2-user/espb
+          git clone -b benchmark0.1 https://${username}:${password}@github.com/mikednjusa/espb.git /home/ec2-user/espb
           mkdir /home/ec2-user/espb/AWS/ESRally/logs
           chown -R ec2-user:ec2-user /home/ec2-user/espb
           sysctl -w vm.max_map_count=262144
