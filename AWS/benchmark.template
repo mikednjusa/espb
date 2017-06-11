@@ -164,14 +164,6 @@ Resources:
       Tags:
       - Key: Name
         Value: benchmark-route-table
-  BenchmarkLocalRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId:
-        Ref: BenchmarkRouteTable
-      DestinationCidrBlock: 10.10.0.0/16
-      GatewayId:
-        Ref: BenchmarkInternetGateway
   BenchmarkTargetRoute:
     Type: AWS::EC2::Route
     DependsOn: BenchmarkInternetGateway
@@ -187,6 +179,13 @@ Resources:
       Tags:
       - Key: Name
         Value: benchmark-internet-gateway
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: BenchmarkVPC
+      InternetGatewayId:
+        Ref: BenchmarkInternetGateway
   BenchmarkS3Bucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
