@@ -150,11 +150,28 @@ Resources:
         FromPort: '9300'
         ToPort: '9300'
         CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
       - IpProtocol: tcp
         FromPort: '80'
         ToPort: '80'
         CidrIp: 0.0.0.0/0
+  BenchmarkInternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+      - Key: Name
+        Value: benchmark-internet-gateway
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: BenchmarkVPC
+      InternetGatewayId:
+        Ref: BenchmarkInternetGateway
   BenchmarkRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -172,21 +189,15 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId:
         Ref: BenchmarkInternetGateway
-  BenchmarkInternetGateway:
-    Type: "AWS::EC2::InternetGateway"
-    Properties:
-      Tags:
-      - Key: Name
-        Value: benchmark-internet-gateway
-  AttachGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId:
-        Ref: BenchmarkVPC
-      InternetGatewayId:
-        Ref: BenchmarkInternetGateway
   BenchmarkS3Bucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
+  BenchmarkSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: BenchmarkPublicSubnet
+      RouteTableId:
+        Ref: BenchmarkRouteTable
 
     
