@@ -53,7 +53,7 @@ Resources:
             - Ref: BenchmarkSecurityGroup
           SubnetId: 
             Ref: BenchmarkPublicSubnet
-          PrivateIpAddress: 10.1.0.101
+          PrivateIpAddress: 10.10.0.101
       Tags:
         -
           Key: Name
@@ -64,7 +64,7 @@ Resources:
       DependsOn: BenchmarkS3Bucket
       KeyName: !Ref KeyName
       IamInstanceProfile: !Ref IamInstanceProfile
-      UserData:
+      UserData:a
         Fn::Base64: !Sub |
           #!/bin/bash
           yum -y update
@@ -93,7 +93,7 @@ Resources:
             - Ref: BenchmarkSecurityGroup
           SubnetId: 
             Ref: BenchmarkPrivateSubnet
-          PrivateIpAddress: 10.1.0.102
+          PrivateIpAddress: 10.10.0.102
       Tags:
         -
           Key: Name
@@ -101,7 +101,7 @@ Resources:
   BenchmarkVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.1.0.0/16
+      CidrBlock: 10.10.0.0/16
       EnableDnsHostnames: 'true'
       InstanceTenancy: default
       Tags:
@@ -112,7 +112,7 @@ Resources:
     Properties:
       VpcId:
         Ref: BenchmarkVPC
-      CidrBlock: 10.1.0.0/24
+      CidrBlock: 10.10.0.0/24
       MapPublicIpOnLaunch: true
       AvailabilityZone: !Ref AvailabilityZone
       Tags:
@@ -123,7 +123,7 @@ Resources:
     Properties:
       VpcId:
         Ref: BenchmarkVPC
-      CidrBlock: 10.1.1.0/24
+      CidrBlock: 10.10.1.0/24
       AvailabilityZone: !Ref AvailabilityZone
       Tags:
       - Key: Name
@@ -169,7 +169,7 @@ Resources:
     Properties:
       RouteTableId:
         Ref: BenchmarkRouteTable
-      DestinationCidrBlock: 10.1.0.0/16
+      DestinationCidrBlock: 10.10.0.0/16
       GatewayId:
         Ref: BenchmarkInternetGateway
   BenchmarkTargetRoute:
