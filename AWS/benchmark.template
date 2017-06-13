@@ -189,9 +189,6 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId:
         Ref: BenchmarkInternetGateway
-  BenchmarkS3Bucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
   BenchmarkSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
