@@ -15,6 +15,9 @@ Parameters:
   InstanceType:
     Type: String
     Default: INSTANCE_TYPE
+  BenchmarkS3Bucket:
+    Type: String
+    Default: S3_BUCKET
   username:
     Type: String
     Default: username 
