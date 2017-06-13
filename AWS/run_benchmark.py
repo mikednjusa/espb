@@ -7,6 +7,7 @@ import requests
 import boto3
 import ConfigParser
 import re
+import datetime
 
 # Parse command line args:
 def parseArgs():
@@ -59,8 +60,12 @@ if __name__ == '__main__':
   num_instances = config.get('esrally', 'NUM_OF_INSTANCES')
   instance_type = config.get('esrally', 'INSTANCE_TYPE')
   key_pair = config.get('esrally', 'INSTANCE_KEY_PAIR')
-  s3_bucket = config.get('esrally', 'S3_BUCKET')
   region = config.get('esrally', 'REGION')
+  
+  # create a bucket
+  s3_bucket = 'esrally_benchmarking'+str(datetime.datetime.now())
+
+  response = boto3.resource('s3').creat_bucket(s3_bucket)
   
   # make edits to Cloudformation template
   with open('benchmark.template', 'r') as cffile:
