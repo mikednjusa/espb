@@ -3,6 +3,15 @@ Parameters:
   KeyName:
     Type: AWS::EC2::KeyPair::KeyName
     Default: INSTANCE_KEY_PAIR
+  PublicSubnet:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-b743baed
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-5847be02
+  BenchmarkSG:
+    Type: String
+    Default: sg-0e1c7070
   IamInstanceProfile:
     Type: String
     Default: es-benchmark-role
@@ -15,15 +24,9 @@ Parameters:
   InstanceType:
     Type: String
     Default: INSTANCE_TYPE
-  BenchmarkS3Bucket:
+  S3Bucket:
     Type: String
     Default: S3_BUCKET
-  username:
-    Type: String
-    Default: username 
-  password:
-    Type: String
-    Default: password
 Resources:
   BenchmarkInstance:
     Type: AWS::EC2::Instance
@@ -43,7 +46,7 @@ Resources:
           usermod -aG docker ec2-user
           service docker start
           sysctl -w vm.max_map_count=262144
-          git clone -b benchmark0.1 https://${username}:${password}@github.com/mikednjusa/espb.git /home/ec2-user/espb
+          git clone -b benchmark https://user:password@github.com/mikednjusa/espb.git /home/ec2-user/espb
           chown -R ec2-user:ec2-user /home/ec2-user/espb
           /usr/local/bin/docker-compose -f /home/ec2-user/espb/AWS/ESBenchmark/docker-compose.yml up
       InstanceType: !Ref InstanceType
@@ -53,10 +56,10 @@ Resources:
         - AssociatePublicIpAddress: "true"
           DeviceIndex: "0"
           GroupSet: 
-            - Ref: BenchmarkSecurityGroup
+            - Ref: BenchmarkSG
           SubnetId: 
-            Ref: BenchmarkPrivateSubnet
-          PrivateIpAddress: 10.10.1.101
+            Ref: PublicSubnet
+          PrivateIpAddress: 10.0.0.101
       Tags:
         -
           Key: Name
@@ -79,12 +82,12 @@ Resources:
           yum -y upgrade
           usermod -aG docker ec2-user
           service docker start
-          git clone -b benchmark0.1 https://${username}:${password}@github.com/mikednjusa/espb.git /home/ec2-user/espb
+          git clone -b benchmark https://user:password@github.com/mikednjusa/espb.git /home/ec2-user/espb
           mkdir /home/ec2-user/espb/AWS/ESRally/logs
           chown -R ec2-user:ec2-user /home/ec2-user/espb
           sysctl -w vm.max_map_count=262144
           /usr/local/bin/docker-compose -f /home/ec2-user/espb/AWS/ESRally/docker-compose.yml up -d
-          python /home/ec2-user/espb/AWS/ESRally/run_test.py --bucket ${BenchmarkS3Bucket}
+          python /home/ec2-user/espb/AWS/ESRally/run_test.py --bucket ${S3Bucket}
       InstanceType: !Ref InstanceType
       AvailabilityZone: !Ref AvailabilityZone
       ImageId: !Ref ImageId
@@ -92,112 +95,11 @@ Resources:
         - AssociatePublicIpAddress: "true"
           DeviceIndex: "0"
           GroupSet: 
-            - Ref: BenchmarkSecurityGroup
+            - Ref: BenchmarkSG
           SubnetId: 
-            Ref: BenchmarkPublicSubnet
-          PrivateIpAddress: 10.10.0.102
+            Ref: PublicSubnet
+          PrivateIpAddress: 10.0.0.102
       Tags:
         -
           Key: Name
           Value: EsRally-monitoring
-  BenchmarkVPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: 10.10.0.0/16
-      EnableDnsHostnames: 'true'
-      InstanceTenancy: default
-      Tags:
-      - Key: Name
-        Value: benchmark-vpc
-  BenchmarkPublicSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId:
-        Ref: BenchmarkVPC
-      CidrBlock: 10.10.0.0/24
-      MapPublicIpOnLaunch: true
-      AvailabilityZone: !Ref AvailabilityZone
-      Tags:
-      - Key: Name
-        Value: benchmark-public-subnet
-  BenchmarkPrivateSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId:
-        Ref: BenchmarkVPC
-      CidrBlock: 10.10.1.0/24
-      AvailabilityZone: !Ref AvailabilityZone
-      Tags:
-      - Key: Name
-        Value: benchmark-private-subnet
-  BenchmarkSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Allow http to client host
-      VpcId:
-        Ref: BenchmarkVPC
-      SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: '80'
-        ToPort: '80'
-        CidrIp: 0.0.0.0/0
-      - IpProtocol: tcp
-        FromPort: '5601'
-        ToPort: '5601'
-        CidrIp: 0.0.0.0/0
-      - IpProtocol: tcp
-        FromPort: '9200'
-        ToPort: '9200'
-        CidrIp: 0.0.0.0/0
-      - IpProtocol: tcp
-        FromPort: '9300'
-        ToPort: '9300'
-        CidrIp: 0.0.0.0/0
-      - IpProtocol: tcp
-        FromPort: '22'
-        ToPort: '22'
-        CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-      - IpProtocol: tcp
-        FromPort: '80'
-        ToPort: '80'
-        CidrIp: 0.0.0.0/0
-  BenchmarkInternetGateway:
-    Type: "AWS::EC2::InternetGateway"
-    Properties:
-      Tags:
-      - Key: Name
-        Value: benchmark-internet-gateway
-  AttachGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId:
-        Ref: BenchmarkVPC
-      InternetGatewayId:
-        Ref: BenchmarkInternetGateway
-  BenchmarkRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId:
-        Ref: BenchmarkVPC
-      Tags:
-      - Key: Name
-        Value: benchmark-route-table
-  BenchmarkTargetRoute:
-    Type: AWS::EC2::Route
-    DependsOn: BenchmarkInternetGateway
-    Properties:
-      RouteTableId:
-        Ref: BenchmarkRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId:
-        Ref: BenchmarkInternetGateway
-  BenchmarkSubnetRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId:
-        Ref: BenchmarkPublicSubnet
-      RouteTableId:
-        Ref: BenchmarkRouteTable
-
-    
