@@ -4,4 +4,6 @@ INSTANCE_TYPE: m4.large
 INSTANCE_KEY_PAIR: lambda-test-key
 S3_BUCKET: esrally-benchmarking
 REGION: us-east-1b
+GIT_USERNAME: your-username
+GIT_PASSWORD: your-password
 

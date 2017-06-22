@@ -61,6 +61,8 @@ if __name__ == '__main__':
   key_pair = config.get('esrally', 'INSTANCE_KEY_PAIR')
   s3_bucket = config.get('esrally', 'S3_BUCKET')
   region = config.get('esrally', 'REGION')
+  user = config.get('esrally', 'GIT_USERNAME')
+  password = config.get('esrally', 'GIT_PASSWORD')
   
   # make edits to Cloudformation template
   with open('benchmark.template', 'r') as cffile:
@@ -71,6 +73,8 @@ if __name__ == '__main__':
     data = re.sub('S3_BUCKET', s3_bucket, data)
     data = re.sub('DATA_FILE_S3_LOCATION', s3_bucket, data)
     data = re.sub('REGION', region, data)
+    data = re.sub('GIT_USERNAME', user, data)
+    data = re.sub('GIT_PASSWORD', password, data)
     cffile.close()
 
   with open("benchmark-cf.yml", "w") as text_file:
