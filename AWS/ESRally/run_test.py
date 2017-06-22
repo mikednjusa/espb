@@ -119,6 +119,7 @@ def check_container_exists(name):
 
 if __name__ == '__main__':
   logging.info(str(datetime.datetime.now()) + ': starting test')
+  curr_date = datetime.datetime.now()
   args = parseArgs()
   boto3.resource('s3').meta.client.download_file(args.bucket, 'data_file.json', 'data_file.json')
   with open('data_file.json') as json_data:
@@ -169,8 +170,9 @@ if __name__ == '__main__':
         try:
           username = 'elastic'
           password = 'changeme'
-          year = datetime.datetime.now().year
-          url = 'http://172.25.0.3:9200/rally-{}/metrics/_search?q=environment:benchmark'.format(year)
+          year = curr_date.year
+          month = curr_date.strftime('%m')
+          url = 'http://172.25.0.3:9200/rally-metrics-{0}-{1}/metrics/_search?q=environment:benchmark'.format(year, month)
           request = urllib2.Request(url)
           base64string = base64.b64encode('%s:%s' % (username, password))
           request.add_header("Authorization", "Basic %s" % base64string)   
