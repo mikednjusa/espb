@@ -13,7 +13,7 @@ import base64
 import subprocess
 import logging
 
-LOG_FILENAME = 'logging.out'
+LOG_FILENAME = '/home/ec2-user/espb/AWS/logging.out'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 
@@ -188,4 +188,4 @@ if __name__ == '__main__':
   print('Script is done!')
   
   # tear down stack and benchmarking
-  #boto3.client('cloudformation').delete_stack(stackName='ES-Benchmarking-Stack')
+  boto3.client('cloudformation').delete_stack(stackName='ES-Benchmarking-Stack')
