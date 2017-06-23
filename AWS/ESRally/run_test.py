@@ -8,7 +8,7 @@ import json
 import boto3
 import docker
 import zipfile
-import urllib2
+import urllib2, requests
 import base64
 import subprocess
 import logging
@@ -188,4 +188,6 @@ if __name__ == '__main__':
   print('Script is done!')
   
   # tear down stack and benchmarking
-  boto3.client('cloudformation').delete_stack(stackName='ES-Benchmarking-Stack')
+  region_resp=requests.get('http://169.254.169.254/latest/dynamic/instance-identity/document')
+  region = str(json.loads(region_resp.text)['region'])
+  boto3.client('cloudformation', region_name=region).delete_stack(StackName='ES-Benchmarking-Stack')
