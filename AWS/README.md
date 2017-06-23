@@ -27,7 +27,7 @@ The script will take in a config file and set up the benchmarking cluster and mo
 ```
 docker pull pikeabot/docker-controller
 ```
-2. Start a docker container and the run the container bash
+2. Start a docker container and then run the container bash
 ```
 docker run -dit --name docker-controller pikeabot/docker-controller 
 docker exec -it docker-controller /bin/bash
