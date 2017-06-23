@@ -1,64 +1,53 @@
 ## How to Run the Benchmarks
 
 ### Requirements:
+Python 2.7+
+Docker
 AWS User with access keys and AWS CLI set up already
+S3 Bucket
+Instance key pair
+
+Python Libraries:
+  * boto 1.4.4
+  * ConfigParser
+  * requests
 
 ### Usage:
-python run-benchmarking.py –config-file <config-file> --data-file <JSON data file>
 
+```
+python run_benchmark.py –config_file <config-file> --data_file <JSON data file>
+```
 The script will take in a config file and set up the benchmarking cluster and monitoring. It will use the data file to run the esrally benchmarking test. After the benchmarking is done, it will save the data to an S3 bucket and then tear itself down. 
 
 **Note: It does take several minutes for the Docker containers to come up and be running**
 
-### Config File:
+### How To Run:
 
-The script will take in a config file with the following parameters:
+1. Pull the docker image pikeabot/docker-controller. This container has the latest github code from the benchmark branch as well as all of the libraries and dependencies already installed. https://hub.docker.com/r/pikeabot/docker-controller/
+```
+docker pull pikeabot/docker-controller
+```
+2. Start a docker container and the run the container bash
+```
+docker run -dit --name docker-controller pikeabot/docker-controller 
+docker exec -it docker-controller /bin/bash
+```
+3. Run aws configure and enter your aws credentials
 
-NUM_OF_INSTANCES -number of benchmarking instances, max 5
+4. cd /home/espb/AWS
 
-INSTANCE_TYPE -i.e. m4.large
+5. Update the config.example to include your S3 bucket, key pair name, github username and password, the number of instances, the region and instance type.
 
-DEDICATED_HOST_ID -if a host id is provided then it will use the dedicated host instead of regular instances
+6. run:
+```
+python run_benchmark.py --config_file <config-file> --data_file <JSON data file>
+```
+You should see 'Version: 0.0.1' and no errors. 
 
-DEDICATED_HOST_INSTANCE_TYPE -i.e. m4.large
+7. If you log into AWS, under Cloudformation you should see ES-Benchmarking-Stack
 
-NUM_DEDICATED_HOST_INSTANCES -number of benchmarking instances launched on dedicated hosts, max 5
+8. The script takes at while to run and it takes several minutes to create the docker images and launch the containers.
 
-INSTANCE_KEY_PAIR -their desired instance key pair in case they want to be able to access the instances. Otherwise if left blank the script will create an instance key pair. 
+9. If there are any errors, there are several log files you can check such as /var/log/cloud-init-output.log for any errors during bootrapping. The output of run_test.py (the script that runs the esrally benchmarking and saves the log files to S3) logged at /home/ec2-user/espb/AWS/logging.out on the EsRally-Monitoring instance. 
 
-S3_BUCKET -the location of the S3 bucket where JSON data will be stored. 
-
-LOCAL_DATA_DIR: Optional local drive to save the JSON data
- 
-### Data File:
-
-Example: 
-{
- 
-  "test_suites": {
- 
-    "testsuite_001": [
- 
-      {
- 
-        "name": "large_track_tiny1",
- 
-        "instance_type": "m3.medium",
- 
-        "security_group_ids": "",
- 
-        "region": "us-west-2",
- 
-        "test": "esrally --pipeline=from-distribution --distribution-version=5.0.0 --track=geonames --test-mode",
- 
-        "rally_config": "conditional_install_items/rally_csv.ini",
- 
-        "root_size_gb": 16,
- 
-        "do_run": false,
- 
-        "save_on_failure": false
- 
-      }
-}
- 
+For whatever reason, the esrally benchmarking command sometimes hangs. I think this has to something to do with using python subprocess to call bash commands from run_test.py in the ESRally folder. You can either wait or delete the stack and start over.
