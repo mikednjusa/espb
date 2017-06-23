@@ -33,9 +33,9 @@ docker run -dit --name docker-controller pikeabot/docker-controller
 docker exec -it docker-controller /bin/bash
 ```
 3. In the container, run aws configure and enter your aws credentials
-'''
+```
 $ aws configure
-'''
+```
 
 4. cd /home/espb/AWS
 
