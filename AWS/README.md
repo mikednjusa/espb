@@ -1,11 +1,11 @@
 ## How to Run the Benchmarks
 
 ### Requirements:
-Python 2.7+
-Docker
-AWS User with access keys and AWS CLI set up already
-S3 Bucket
-Instance key pair
+-Python 2.7+
+-Docker
+-AWS User with access keys and AWS CLI set up already
+-S3 Bucket
+-Instance key pair
 
 Python Libraries:
   * boto 1.4.4
@@ -29,18 +29,21 @@ docker pull pikeabot/docker-controller
 ```
 2. Start a docker container and the run the container bash
 ```
-docker run -dit --name docker-controller pikeabot/docker-controller 
-docker exec -it docker-controller /bin/bash
+$ docker run -dit --name docker-controller pikeabot/docker-controller 
+$ docker exec -it docker-controller /bin/bash
 ```
 3. Run aws configure and enter your aws credentials
+'''
+$ aws configure
+'''
 
-4. cd /home/espb/AWS
+4. $ cd /home/espb/AWS
 
 5. Update the config.example to include your S3 bucket, key pair name, github username and password, the number of instances, the region and instance type.
 
 6. run:
 ```
-python run_benchmark.py --config_file <config-file> --data_file <JSON data file>
+# python run_benchmark.py --config_file <config-file> --data_file <JSON data file>
 ```
 You should see 'Version: 0.0.1' and no errors. 
 
